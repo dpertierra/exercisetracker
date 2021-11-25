@@ -33,18 +33,6 @@ const ExerciseSchema = new Schema({
 });
 const Exercise = mongoose.model("Exercise", ExerciseSchema);
 
-const LogSchema = new Schema({
-  username: String,
-  count: Number,
-  log: [{
-    description: String,
-    duration: Number,
-    date: String
-  }]
-});
-const Log = mongoose.model("Log", LogSchema);
-
-
 app.post('/api/users', (req, res) =>{
   let username = req.body.username;
   let user = new User({username: username});
