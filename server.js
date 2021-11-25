@@ -105,7 +105,6 @@ app.get('/api/users/:_id/logs/', (req, res) => {
             .then(function (docs, err) {
               if (err) return console.log(err);
               for (let doc of docs) {
-                console.log(doc);
                 let log = { description: doc.description,
                             duration: doc.duration,
                             date: doc.date.toDateString()};
