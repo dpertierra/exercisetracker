@@ -4,8 +4,6 @@ const cors = require('cors')
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const bodyParser = require('body-parser');
-const {forEach} = require("mongoose/lib/statemachine");
-const {log} = require("nodemon/lib/utils");
 require('dotenv').config()
 const mongouri = process.env.MONGO_URI;
 
