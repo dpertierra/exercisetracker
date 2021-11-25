@@ -41,10 +41,12 @@ app.post('/api/users', (req, res) =>{
 });
 
 app.get('/api/users', (req, res) =>{
-  User.find({}, (err, docs) =>{
-    if (err) return console.log(err)
-    res.json({docs});
-  });
+  User.find({})
+      .select(['_id', 'username'])
+      .exec((err, docs) => {
+        if (err) return console.log(err)
+        res.json(docs)
+      });
 });
 
 app.post('/api/users/:_id/exercises', (req, res) => {
