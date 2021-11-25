@@ -42,14 +42,8 @@ app.post('/api/users', (req, res) =>{
 
 app.get('/api/users', (req, res) =>{
   User.find({}, (err, docs) =>{
-    if (err) return console.log(err);
-    let users = [];
-    for (let doc of docs) {
-      let user = {_id: doc._id, username: doc.username}
-      users.push(user);
-    }
-    res.json({'users': users});
-    return users;
+    if (err) return console.log(err)
+    res.json({docs});
   });
 });
 
