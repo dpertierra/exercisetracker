@@ -71,6 +71,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
   let userid = req.params._id
   User.findById(userid,function (err, user){
     if (err) return console.log(err);
+    else if (!user) return res.json({'error': 'User does not exist'});
     let exercise = new Exercise({
       username: user.username,
       description: req.body.description,
@@ -95,11 +96,12 @@ app.get('/api/users/:_id/logs/', (req, res) => {
   let userid = req.params._id
   let {from, to, limit } = req.query;
   let logs = [];
-  User.findById(userid,function (err, user){
+  User.findById(userid, (err, user) => {
     if (err) return console.log(err);
-    Exercise.find({username: user.username, $date: { $gte: new Date(from), $lte: new Date(to) }})
-            .select('description', 'duration', 'date')
-            .limit(limit)
+    else if (!user) return res.json({'error': 'User does not exist'});
+    Exercise.find({username: user.username, date: { $gte: new Date(from), $lte: new Date(to) }})
+            .select(['description', 'duration', 'date'])
+            .limit(+limit)
             .then(function (docs, err) {
               if (err) return console.log(err);
               for (let doc of docs) {
