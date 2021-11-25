@@ -46,7 +46,7 @@ app.get('/api/users', (req, res) =>{
     let users = [];
     for (let doc of docs) {
       let user = {_id: doc._id, username: doc.username}
-      users.append(user);
+      users.push(user);
     }
     res.json({'users': users});
   });
@@ -69,10 +69,10 @@ app.post('/api/users/:_id/exercises', (req, res) => {
       if (err) return console.log(err);
       res.json({
         'username': user.username,
+        '_id': user._id,
         'description': data.description,
         'duration': data.duration,
-        'date': data.date,
-        '_id': user._id
+        'date': data.date
       });
     })
   });
@@ -81,21 +81,32 @@ app.post('/api/users/:_id/exercises', (req, res) => {
 app.get('/api/users/:_id/logs/', (req, res) => {
   let userid = req.params._id
   let {from, to, limit } = req.query;
+  console.log(from, to);
   let logs = [];
   User.findById(userid, (err, user) => {
     if (err) return console.log(err);
     else if (!user) return res.json({'error': 'User does not exist'});
-    Exercise.find({username: user.username, date: { $gte: new Date(from), $lte: new Date(to) }})
-            .select(['description', 'duration', 'date'])
-            .limit(+limit)
-            .then(function (docs, err) {
-              if (err) return console.log(err);
-              for (let doc of docs) {
-                let log = { description: doc.description,
-                            duration: doc.duration,
-                            date: doc.date.toDateString()};
-                logs.push(log);
-              }
+    let query = {username: user.username};
+    if (from && to)
+      query.date = {$gte: new Date(from), $lte: new Date(to)};
+    else if (from)
+      query.date = {$gte: new Date(from)};
+    else if (to)
+      query.date = {$lte: new Date(to)};
+    console.log(query);
+    Exercise.find(query)
+        .select(['description', 'duration', 'date'])
+        .limit(+limit)
+        .then(function (docs, err) {
+          if (err) return console.log(err);
+          for (let doc of docs) {
+            let log = {
+              description: doc.description,
+              duration: doc.duration,
+              date: doc.date.toDateString()
+            };
+            logs.push(log);
+          }
               res.json({'username': user.username,
                               'count': logs.length,
                               '_id': user._id,
