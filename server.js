@@ -50,28 +50,30 @@ app.get('/api/users', (req, res) =>{
 });
 
 app.post('/api/users/:_id/exercises', (req, res) => {
-  let date = req.body.date ? new Date(req.body.date): new Date();
-  let userid = req.params._id
-  User.findById(userid,function (err, user){
-    if (err) return console.log(err);
-    else if (!user) return res.json({'error': 'User does not exist'});
-    let exercise = new Exercise({
-      username: user.username,
-      description: req.body.description,
-      duration: +req.body.duration,
-      date: date
-    });
+    let date = req.body.date ? new Date(req.body.date) : new Date();
+    let userid = req.params._id
+    User.findById(userid)
+        .select(['_id', 'username'])
+        .exec(function (err, user) {
+            if (err) return console.log(err);
+            else if (!user) return res.json({'error': 'User does not exist'});
+            let exercise = new Exercise({
+                username: user.username,
+                description: req.body.description,
+                duration: +req.body.duration,
+                date: date
+            });
 
-    exercise.save((err, data) =>{
-      if (err) return console.log(err);
-      res.json({
-        user,
-        'description': data.description,
-        'duration': data.duration,
-        'date': data.date
-      });
-    })
-  });
+            exercise.save((err, data) => {
+                if (err) return console.log(err);
+                res.json({
+                    user,
+                    'description': data.description,
+                    'duration': data.duration,
+                    'date': data.date.toDateString()
+                });
+            });
+        });
 });
 
 app.get('/api/users/:_id/logs/', (req, res) => {
