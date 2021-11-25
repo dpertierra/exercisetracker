@@ -49,6 +49,7 @@ app.get('/api/users', (req, res) =>{
       users.push(user);
     }
     res.json({'users': users});
+    return users;
   });
 });
 
@@ -68,8 +69,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
     exercise.save((err, data) =>{
       if (err) return console.log(err);
       res.json({
-        'username': user.username,
-        '_id': user._id,
+        user,
         'description': data.description,
         'duration': data.duration,
         'date': data.date
